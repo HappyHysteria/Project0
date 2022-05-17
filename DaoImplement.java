@@ -95,10 +95,9 @@ public class DaoImplement implements Dao{
 
     @Override
     public void checkBalance(String currentUser) throws SQLException {
-        String sql = "call Balances(?)"; //Stored procedure for > String sql = "select checkings,savings from login where username = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, currentUser);
-        ResultSet resultSet = preparedStatement.executeQuery();
+        CallableStatement sql = connection.prepareCall("{call Balances(?)}"); //Stored procedure for > String sql = "select checkings,savings from login where username = ?";
+        sql.setString(1, currentUser);
+        ResultSet resultSet = sql.executeQuery();
         if (resultSet.next()){
             System.out.println("Checkings balance: " + resultSet.getInt(1));
             System.out.println("Savings balance: " + resultSet.getInt(2));
@@ -110,42 +109,53 @@ public class DaoImplement implements Dao{
 
     @Override
     public void transferMoney(String currentUser, String toUser, int withdraw) throws SQLException, InterruptedException {
-        String sql2 = "select checkings, TransferOut from login where username = ?";
-        PreparedStatement preparedStatement2 = connection.prepareStatement(sql2);
-        preparedStatement2.setString(1, currentUser);
-        ResultSet resultSet2 = preparedStatement2.executeQuery();
-        if (resultSet2.next() && resultSet2.getInt(1) >= withdraw){
-            int updateCheckings = resultSet2.getInt(1) - withdraw;
-            int updateTransfer = resultSet2.getInt(2) + withdraw;
-            String sql3 = "update login set checkings = ?, TransferOut = ?  where username = ?";
-            PreparedStatement preparedStatement3 = connection.prepareStatement(sql3);
-            preparedStatement3.setInt(1, updateCheckings);
-            preparedStatement3.setInt(2, updateTransfer);
-            preparedStatement3.setString(3, currentUser);
-            int count = preparedStatement3.executeUpdate();
-            if (count > 0) {
-                System.out.println("Processing. Please wait");
+        String sql5 = "select name from login where name = ?";
+        PreparedStatement statement = connection.prepareStatement(sql5);
+        statement.setString(1,toUser);
+        ResultSet resultSet1 = statement.executeQuery();
+        if (resultSet1.next()) {
+            String sql2 = "select checkings, TransferOut from login where username = ?";
+            PreparedStatement preparedStatement2 = connection.prepareStatement(sql2);
+            preparedStatement2.setString(1, currentUser);
+            ResultSet resultSet2 = preparedStatement2.executeQuery();
+            if (resultSet2.next() && resultSet2.getInt(1) >= withdraw){
+                int updateCheckings = resultSet2.getInt(1) - withdraw;
+                int updateTransfer = resultSet2.getInt(2) + withdraw;
+                String sql3 = "update login set checkings = ?, TransferOut = ?  where username = ?";
+                PreparedStatement preparedStatement3 = connection.prepareStatement(sql3);
+                preparedStatement3.setInt(1, updateCheckings);
+                preparedStatement3.setInt(2, updateTransfer);
+                preparedStatement3.setString(3, currentUser);
+                int count1 = preparedStatement3.executeUpdate();
+                if (count1 > 0) {
+                    System.out.println("Processing. Please wait");
+                } else {
+                    System.out.println("Could not process");
+                }
             } else {
-                System.out.println("Could not process");
+                System.out.println("Amount to send is invalid");
+                Thread.sleep(1000);
+                return;
             }
         } else {
-            System.out.println("Amount to send is invalid");
+            System.out.println("Invalid recipient");
             Thread.sleep(1000);
             return;
         }
+
         Thread.sleep(1000);
         String sql = "select TransferIn from login where name = ?";
-        PreparedStatement statement = connection.prepareStatement(sql);
-        statement.setString(1, toUser);
-        ResultSet resultSet = statement.executeQuery();
+        PreparedStatement statement1 = connection.prepareStatement(sql);
+        statement1.setString(1, toUser);
+        ResultSet resultSet = statement1.executeQuery();
         if (resultSet.next()){
             int update = resultSet.getInt(1) + withdraw;
             String sql4 = "update login set TransferIn = ? where name = ?";
             PreparedStatement preparedStatement1 = connection.prepareStatement(sql4);
             preparedStatement1.setInt(1,update);
             preparedStatement1.setString(2, toUser);
-            int count = preparedStatement1.executeUpdate();
-            if (count > 0) {
+            int count2 = preparedStatement1.executeUpdate();
+            if (count2 > 0) {
                 System.out.println("Transfer completed successfully");
             } else {
                 System.out.println("Transfer failed");
