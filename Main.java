@@ -40,12 +40,16 @@ public class Main {
                     int checkings = scan.nextInt();
                     System.out.println("Enter amount to deposit into saving account");
                     int savings = scan.nextInt();
-                    if ((checkings + savings) < 1000){
-                        employeeDenies();
+                    if (checkings < 0 || savings < 0){
+                        System.out.println("You cannot create an account with a negative balance");
                     } else {
-                        employeeAccepts();
-                        Customer newCustomer = new Customer(name, username, password, checkings, savings);
-                        dao.addUser(newCustomer);
+                        if ((checkings + savings) < 1000){
+                            employeeDenies();
+                        } else {
+                            employeeAccepts();
+                            Customer newCustomer = new Customer(name, username, password, checkings, savings);
+                            dao.addUser(newCustomer);
+                        }
                     }
                     Thread.sleep(1000);
                     break;
