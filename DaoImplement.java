@@ -51,7 +51,6 @@ public class DaoImplement implements Dao{
             update = resultSet.getInt(1) - customer.getCheckings();
         } else {
             System.out.println("Invalid transaction");
-            customer.setCheckings(0); //for logs to update properly
             return;
         }
 
@@ -80,7 +79,6 @@ public class DaoImplement implements Dao{
             update = resultSet.getInt(1) - customer.getSavings();
         } else {
             System.out.println("Invalid transaction");
-            customer.setSavings(0); //for logs to update properly
             return;
         }
         String sql2 = "update login set savings = ? where username = ?";

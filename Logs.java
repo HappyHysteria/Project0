@@ -3,7 +3,6 @@ package Jordan;
 import java.io.*;
 
 public class Logs {
-    private static boolean isLoggedIn;
 
     public static void createFile() {
         File directory = new File("Logs");
