@@ -52,10 +52,21 @@ public class Logs {
     }
     public static void writeFile(Customer customer, int withdraw) throws IOException {
         FileWriter fw = new FileWriter("D:\\Revature\\Java\\Project0\\Logs\\Transactions.txt", true);
-        if (customer.getCheckings() < withdraw || customer.getSavings() < withdraw){
-            fw.write("Over-withdraw attempted");
+        if (customer.getCheckings() < withdraw){
+            fw.write("Over-withdraw attempted from checkings");
         } else {
-            fw.write("User successfully withdrew funds");
+            fw.write("User successfully withdrew funds from checkings");
+        }
+        fw.write("\n");
+        fw.flush();
+        fw.close();
+    }
+    public static void Write(Customer customer, int withdraw) throws IOException {
+        FileWriter fw = new FileWriter("D:\\Revature\\Java\\Project0\\Logs\\Transactions.txt", true);
+        if (customer.getSavings() < withdraw){
+            fw.write("Over-withdraw attempted from savings");
+        } else {
+            fw.write("User successfully withdrew funds from savings");
         }
         fw.write("\n");
         fw.flush();

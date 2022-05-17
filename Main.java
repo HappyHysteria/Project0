@@ -136,7 +136,6 @@ public class Main {
                                         checkWithdraw.setCheckings(withdraw);
                                         checkWithdraw.setUsername(currentUser);
                                         dao.updateChecking(checkWithdraw, false);
-                                        checkWithdraw.setSavings(withdraw); //for logs purposes only - does not affect transaction
                                         writeFile(checkWithdraw, withdraw);
                                     }
                                     Thread.sleep(1000);
@@ -152,8 +151,7 @@ public class Main {
                                         saveWithdraw.setSavings(withdraw);
                                         saveWithdraw.setUsername(currentUser);
                                         dao.updateSaving(saveWithdraw,false);
-                                        saveWithdraw.setCheckings(withdraw); //for logs purposes only - does not affect transaction
-                                        writeFile(saveWithdraw, withdraw);
+                                        Write(saveWithdraw, withdraw);
                                     }
                                     Thread.sleep(1000);
                                     break;
