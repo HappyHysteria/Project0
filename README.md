@@ -6,3 +6,4 @@ If Transactions.txt is not loaded, the project will create a new file upon execu
 Each user will have 2 accounts consisting of both checking and saving accounts.
 Employee will reject account creation if the accounts don't meet the minimum deposit requirements.
 Wire transfers (in or out) will be handled through checking account balance.
+Requirement for stored procedure is used for account balance inquiry
