@@ -42,18 +42,17 @@ public class Main {
                     int savings = scan.nextInt();
                     if (checkings < 0 || savings < 0){
                         System.out.println("You cannot create an account with a negative balance");
-                    } else {
-                        if ((checkings + savings) < 1000){
+                    }
+                    else if ((checkings + savings) < 1000) {
                             employeeDenies();
-                        } else {
+                    } else {
                             employeeAccepts();
                             Customer newCustomer = new Customer(name, username, password, checkings, savings);
                             dao.addUser(newCustomer);
                         }
-                    }
                     Thread.sleep(1000);
                     break;
-                }
+                    }
                 case 2: {
                     if (!isLoggedIn) {
                         System.out.println("Enter your username");
