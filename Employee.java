@@ -1,10 +1,16 @@
 package Jordan;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static Jordan.Logs.*;
 
 
 public class Employee {
+    private static List<String> list;
     static Customer customer = new Customer();
 
     public static void employeeDenies() throws IOException {
@@ -17,11 +23,12 @@ public class Employee {
         customer.setUsername("exists");
         writeFile(customer);
     }
-    public static void employeeLogin(String user) throws IOException {
-        if (user == null) {
-            System.out.println("Employee says, 'Please come back with a valid username' ");
-        } else {
-            writeFile();
+    public static void readTransactions() throws IOException, InterruptedException {
+        try(BufferedReader bufferedReader = new BufferedReader(new FileReader("D:\\Revature\\Java\\Project0\\Logs\\Transactions.txt"))){
+            list = bufferedReader.lines().collect(Collectors.toList());
+            list.forEach(System.out::println);
+            System.out.println("****************************");
+            Thread.sleep(2000);
         }
     }
 }

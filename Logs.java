@@ -20,7 +20,7 @@ public class Logs {
         if (customer.getUsername() == null){
             fw.write("Account creation denied by employee");
         } else {
-            fw.write("New account created");
+            fw.write("New account created. Pending approval");
         }
         fw.write("\n");
         fw.flush();

@@ -18,13 +18,14 @@ public class Main {
         boolean mainMenu = true;
         boolean isLoggedIn = false;
         boolean depositing = false;
+        boolean employeeLoggedIn = false;
 
         while (mainMenu) {
             System.out.println("Welcome to Big Bank");
             System.out.println("Press 1: Create an account");
             System.out.println("Press 2: Login to existing account");
             System.out.println("Press 3: View your account");
-            System.out.println("Press 4: Have an Employee check your account balance");
+            System.out.println("Press 4: Login as Employee");
             System.out.println("Press 5: Exit");
 
             int input = scan.nextInt();
@@ -194,11 +195,48 @@ public class Main {
                     break;
                 }
                 case 4: {
-                    System.out.println("Employee says, 'Hello and welcome to Big Bank. I can check your account balance for you if you can provide your username.' ");
-                    System.out.println("What is your username?");
-                    currentUser = scan.next();
-                    employeeLogin(currentUser);
-                    dao.checkBalance(currentUser);
+                    if (!employeeLoggedIn) {
+                        System.out.println("Please login to your employee account");
+                        System.out.println("Enter your username");
+                        String username = scan.next();
+                        System.out.println("Enter your password");
+                        String password = scan.next();
+                        employeeLoggedIn = dao.employeeLogin(username, password, employeeLoggedIn);
+                    } else {
+                        System.out.println("You have logged in");
+                        while (employeeLoggedIn) {
+                            mainMenu = false;
+                            System.out.println("Press 1 to view pending customer approvals");
+                            System.out.println("Press 2 to view all customer accounts");
+                            System.out.println("Press 3 to view all transactions");
+                            System.out.println("Press 4 to log out");
+                            int employeeInput = scan.nextInt();
+                            switch (employeeInput) {
+                                case 1: {
+                                    dao.accountPending();
+                                    System.out.println("Enter the account number you would like to approve");
+                                    int account = scan.nextInt();
+                                    dao.employeeApproval(account);
+                                    break;
+                                }
+                                case 2: {
+                                    dao.employeeOverview();
+                                    break;
+                                }
+                                case 3: {
+                                    System.out.println("All Transactions");
+                                    readTransactions();
+                                    break;
+                                }
+                                case 4: {
+                                    employeeLoggedIn = false;
+                                    mainMenu = true;
+                                    System.out.println("You have logged out");
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     break;
                 }
                 case 5: {
@@ -209,6 +247,5 @@ public class Main {
                 }
             }
         }
-
     }
 }

@@ -2,9 +2,12 @@ package Jordan;
 
 import java.sql.*;
 
-public class DaoImplement implements Dao{
+public class DaoImplement implements Dao {
     Connection connection;
-    public DaoImplement() {this.connection = ConnectionFactory.getConnection();}
+
+    public DaoImplement() {
+        this.connection = ConnectionFactory.getConnection();
+    }
 
     @Override
     public void addUser(Customer customer) throws SQLException {
@@ -23,12 +26,12 @@ public class DaoImplement implements Dao{
 
     @Override
     public boolean login(String username, String password, boolean isLoggedIn) throws SQLException {
-        String sql = "select * from login where username = ? && password = ?";
+        String sql = "select * from login where username = ? && password = ? && status = 'Approved'";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, username);
         preparedStatement.setString(2, password);
         ResultSet resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()){
+        if (resultSet.next()) {
             System.out.println("Welcome " + resultSet.getString(2));
             System.out.println("Your account number: " + resultSet.getInt(1));
             System.out.println("******************");
@@ -38,16 +41,17 @@ public class DaoImplement implements Dao{
             return false;
         }
     }
+
     @Override
-    public void updateChecking(Customer customer, boolean deposit) throws SQLException{
+    public void updateChecking(Customer customer, boolean deposit) throws SQLException {
         int update = 0;
         String sql = "select checkings from login where username = ?";
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setString(1, customer.getUsername());
         ResultSet resultSet = statement.executeQuery();
-        if (deposit && resultSet.next()){
+        if (deposit && resultSet.next()) {
             update = resultSet.getInt(1) + customer.getCheckings();
-        } else if (!deposit && resultSet.next() && resultSet.getInt(1) >= customer.getCheckings()){
+        } else if (!deposit && resultSet.next() && resultSet.getInt(1) >= customer.getCheckings()) {
             update = resultSet.getInt(1) - customer.getCheckings();
         } else {
             System.out.println("Invalid transaction");
@@ -73,9 +77,9 @@ public class DaoImplement implements Dao{
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setString(1, customer.getUsername());
         ResultSet resultSet = statement.executeQuery();
-        if (deposit && resultSet.next()){
+        if (deposit && resultSet.next()) {
             update = resultSet.getInt(1) + customer.getSavings();
-        } else if (!deposit && resultSet.next() && resultSet.getInt(1) >= customer.getSavings()){
+        } else if (!deposit && resultSet.next() && resultSet.getInt(1) >= customer.getSavings()) {
             update = resultSet.getInt(1) - customer.getSavings();
         } else {
             System.out.println("Invalid transaction");
@@ -83,7 +87,7 @@ public class DaoImplement implements Dao{
         }
         String sql2 = "update login set savings = ? where username = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(sql2);
-        preparedStatement.setInt(1,update);
+        preparedStatement.setInt(1, update);
         preparedStatement.setString(2, customer.getUsername());
         int count = preparedStatement.executeUpdate();
         if (count > 0) {
@@ -98,11 +102,11 @@ public class DaoImplement implements Dao{
         CallableStatement sql = connection.prepareCall("{call Balances(?)}"); //Stored procedure for > String sql = "select checkings,savings from login where username = ?";
         sql.setString(1, currentUser);
         ResultSet resultSet = sql.executeQuery();
-        if (resultSet.next()){
+        if (resultSet.next()) {
             System.out.println("Checkings balance: " + resultSet.getInt(1));
             System.out.println("Savings balance: " + resultSet.getInt(2));
             System.out.println("*****************");
-        } else{
+        } else {
             System.out.println("Error");
         }
     }
@@ -111,14 +115,14 @@ public class DaoImplement implements Dao{
     public void transferMoney(String currentUser, String toUser, int withdraw) throws SQLException, InterruptedException {
         String sql5 = "select name from login where name = ?";
         PreparedStatement statement = connection.prepareStatement(sql5);
-        statement.setString(1,toUser);
+        statement.setString(1, toUser);
         ResultSet resultSet1 = statement.executeQuery();
         if (resultSet1.next()) {
             String sql2 = "select checkings, TransferOut from login where username = ?";
             PreparedStatement preparedStatement2 = connection.prepareStatement(sql2);
             preparedStatement2.setString(1, currentUser);
             ResultSet resultSet2 = preparedStatement2.executeQuery();
-            if (resultSet2.next() && resultSet2.getInt(1) >= withdraw){
+            if (resultSet2.next() && resultSet2.getInt(1) >= withdraw) {
                 int updateCheckings = resultSet2.getInt(1) - withdraw;
                 int updateTransfer = resultSet2.getInt(2) + withdraw;
                 String sql3 = "update login set checkings = ?, TransferOut = ?  where username = ?";
@@ -148,11 +152,11 @@ public class DaoImplement implements Dao{
         PreparedStatement statement1 = connection.prepareStatement(sql);
         statement1.setString(1, toUser);
         ResultSet resultSet = statement1.executeQuery();
-        if (resultSet.next()){
+        if (resultSet.next()) {
             int update = resultSet.getInt(1) + withdraw;
             String sql4 = "update login set TransferIn = ? where name = ?";
             PreparedStatement preparedStatement1 = connection.prepareStatement(sql4);
-            preparedStatement1.setInt(1,update);
+            preparedStatement1.setInt(1, update);
             preparedStatement1.setString(2, toUser);
             int count2 = preparedStatement1.executeUpdate();
             if (count2 > 0) {
@@ -172,7 +176,7 @@ public class DaoImplement implements Dao{
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, currentUser);
         ResultSet resultSet = preparedStatement.executeQuery();
-        if (resultSet.next() && resultSet.getInt(2) > 0){
+        if (resultSet.next() && resultSet.getInt(2) > 0) {
             System.out.println("Money available to transfer in: " + resultSet.getInt(2));
             Thread.sleep(1000);
             int update = resultSet.getInt(1) + resultSet.getInt(2);
@@ -189,6 +193,72 @@ public class DaoImplement implements Dao{
             }
         } else {
             System.out.println("You have no incoming wire transfers.");
+        }
+        Thread.sleep(1000);
+    }
+
+    @Override
+    public boolean employeeLogin(String username, String password, boolean employeeLoggedIn) throws SQLException, InterruptedException {
+        String sql = "select * from employee where username = ? && password = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, username);
+        preparedStatement.setString(2, password);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            System.out.println("Employee logged in successfully");
+            System.out.println("****************************");
+            return true;
+        } else {
+            System.out.println("Invalid employee login");
+            System.out.println("****************************");
+            return false;
+        }
+    }
+
+    @Override
+    public void employeeOverview() throws SQLException, InterruptedException {
+        String sql = "select * from login";
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+        while (resultSet.next()) {
+            System.out.println("Account number: " + resultSet.getInt(1) + ", Name: " + resultSet.getString(2) + ", Checkings: " + resultSet.getInt(5)
+                    + ", Savings: " + resultSet.getInt(6));
+        }
+        System.out.println("****************************");
+        Thread.sleep(2000);
+        return;
+    }
+
+    @Override
+    public void accountPending() throws SQLException, InterruptedException {
+        String sql = "select * from login where status = 'Pending'";
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+        while (resultSet.next()) {
+            System.out.println("Account number: " + resultSet.getInt(1) + ", Name: " + resultSet.getString(2) + ", Username: " + resultSet.getString(3) + ", Status: "
+                    + resultSet.getString(9));
+        }
+        Thread.sleep(1000);
+    }
+
+    @Override
+    public void employeeApproval(int account) throws SQLException, InterruptedException {
+        String sql = "select * from login where accountnumber = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, account);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            String sql2 = "update login set status = 'Approved' where accountnumber = ?";
+            PreparedStatement preparedStatement1 = connection.prepareStatement(sql2);
+            preparedStatement1.setInt(1, account);
+            int count = preparedStatement1.executeUpdate();
+            if (count > 0){
+                System.out.println("Account successfully approved");
+            } else {
+                System.out.println("Error");
+            }
+        } else {
+            System.out.println("Invalid account number");
         }
         Thread.sleep(1000);
     }
