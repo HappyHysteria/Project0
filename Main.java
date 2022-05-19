@@ -17,7 +17,6 @@ public class Main {
         int withdraw;
         boolean mainMenu = true;
         boolean isLoggedIn = false;
-        boolean depositing = false;
         boolean employeeLoggedIn = false;
 
         while (mainMenu) {
@@ -44,12 +43,12 @@ public class Main {
                     if (checkings < 0 || savings < 0){
                         System.out.println("You cannot create an account with a negative balance");
                     }
-                    else if ((checkings + savings) < 1000) {
+                    else if ((checkings + savings) < 100) {
                             employeeDenies();
                     } else {
-                            employeeAccepts();
                             Customer newCustomer = new Customer(name, username, password, checkings, savings);
                             dao.addUser(newCustomer);
+                            writeFile(newCustomer);
                         }
                     Thread.sleep(1000);
                     break;
@@ -95,7 +94,6 @@ public class Main {
                             switch (newInput) {
                                 case 1: {
                                     System.out.println("Enter the amount to deposit to checkings:");
-                                    depositing = true;
                                     deposit = scan.nextInt();
                                     if (deposit <= 0){
                                         System.out.println("Invalid amount to deposit");
@@ -105,14 +103,12 @@ public class Main {
                                         customerChecking.setUsername(currentUser);
                                         dao.updateChecking(customerChecking, true);
                                     }
-                                    depositing = false;
                                     writeFile(deposit);
                                     Thread.sleep(1000);
                                     break;
                                 }
                                 case 2: {
                                     System.out.println("Enter the amount to deposit to savings:");
-                                    depositing = true;
                                     deposit = scan.nextInt();
                                     if (deposit <= 0){
                                         System.out.println("Invalid amount to deposit");
@@ -122,7 +118,6 @@ public class Main {
                                         customerSaving.setUsername(currentUser);
                                         dao.updateSaving(customerSaving, true);
                                     }
-                                    depositing = false;
                                     writeFile(deposit);
                                     Thread.sleep(1000);
                                     break;
@@ -217,6 +212,7 @@ public class Main {
                                     System.out.println("Enter the account number you would like to approve");
                                     int account = scan.nextInt();
                                     dao.employeeApproval(account);
+                                    employeeAccepts();
                                     break;
                                 }
                                 case 2: {

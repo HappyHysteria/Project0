@@ -105,4 +105,12 @@ public class Logs {
         fw.flush();
         fw.close();
     }
+    public static void write(boolean employee) throws IOException{
+        FileWriter fw = new FileWriter("D:\\Revature\\Java\\Project0\\Logs\\Transactions.txt", true);
+        fw.write("Employee approved new account");
+        fw.write("\n");
+        fw.flush();
+        fw.close();
+    }
+
 }

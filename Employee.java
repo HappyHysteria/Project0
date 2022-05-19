@@ -14,14 +14,12 @@ public class Employee {
     static Customer customer = new Customer();
 
     public static void employeeDenies() throws IOException {
-        System.out.println("Employee says, 'You cannot create an account unless you deposit a cumulative minimum of $1000.' ");
+        System.out.println("Employee says, 'You cannot create an account unless you deposit a cumulative minimum of $100.' ");
         customer.setUsername(null);
         writeFile(customer);
     }
     public static void employeeAccepts() throws IOException {
-        System.out.println("Employee says, 'Thank you for choosing Big Bank for your banking needs. Your account is now active' ");
-        customer.setUsername("exists");
-        writeFile(customer);
+        write(true);
     }
     public static void readTransactions() throws IOException, InterruptedException {
         try(BufferedReader bufferedReader = new BufferedReader(new FileReader("D:\\Revature\\Java\\Project0\\Logs\\Transactions.txt"))){
